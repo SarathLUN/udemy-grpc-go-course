@@ -103,3 +103,62 @@ require (
 	google.golang.org/protobuf v1.25.0 // indirect
 )
 ```
+# start the proto file
+- when try to use `option go_package = ".;greetpb";` GoLand IDE got error `Built-in option 'go_package' not found`
+- this error is gone once change to use full path
+```protobuf
+option go_package = "github.com/SarathLUN/udemy-grpc-go-course;greetpb";
+```
+- before generate gRPC
+```shell
+tree .
+.
+├── README.md
+├── calculator
+├── go.mod
+├── go.sum
+├── greet
+│   └── greetpb
+└── greet.proto
+
+3 directories, 4 files
+```
+- generate gPRC
+```shell
+protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative greet/greetpb/greet.proto
+```
+- after generated gPRC
+```shell
+tree .
+
+.
+├── README.md
+├── calculator
+├── go.mod
+├── go.sum
+└── greet
+    └── greetpb
+        ├── greet.pb.go
+        ├── greet.proto
+        └── greet_grpc.pb.go
+
+3 directories, 6 files
+```
+# start the server
+- when follow the video, got error of strut `server`
+```shell
+./server.go:22:40: cannot use &server{} (type *server) as type greetpb.GreetServiceServer in argument to greetpb.RegisterGreetServiceServer:
+	*server does not implement greetpb.GreetServiceServer (missing greetpb.mustEmbedUnimplementedGreetServiceServer method)
+```
+- we need to implement the interface, so struct `server` need to have code like this:
+```go
+type server struct {
+	greetpb.UnimplementedGreetServiceServer
+}
+```
+- try to run server again, successful:
+```shell
+go run greet/greet_server/server.go
+2021/08/24 00:20:49 Hello world!
+
+```
