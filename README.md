@@ -171,3 +171,48 @@ gor greet_client/client.go
 2021/08/24 23:25:09 created connection client: &{%!f(*grpc.ClientConn=&{0xc00014e940 0x11ba340 localhost:50051 {passthrough  localhost:50051} localhost:50051 {<nil> <nil> [] [] <nil> <nil> {{1000000000 1.6 0.2 120000000000}} false false true 0 <nil>  {grpc-go/1.40.0 <nil> false [] <nil> <nil> {0 0 false} <nil> 0 0 32768 32768 0 <nil> true} [] <nil> 0 false true false <nil> <nil> <nil> <nil> []} 0xc000156480 {<nil> <nil> <nil> 0 grpc-go/1.40.0 {passthrough  localhost:50051}} 0xc0001ce420 {{{0 0} 0 0 0 0} 0xc000136250} {{0 0} 0 0 0 0} 0xc000138840 0xc000144410 map[0xc000175080:{}] {0 0 false} pick_first 0xc000144460 {<nil>} 0xc000156460 0 0xc000142240 {0 0} <nil>})}
 
 ```
+
+---
+
+# gRPC Unary API
+- our message is `Greeting` and contains `first_name` and `last_name` string field
+- it will take a `GreetRequest` that contains a `Greeting`
+- it will return a `GreetResponse` that contains a result string
+- after update `proto` file, we need to re-generate again
+```shell
+protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative greet/greetpb/greet.proto
+
+ll greet/greetpb
+
+total 40
+-rw-r--r--  1 sarath  staff   9.2K Aug 25 00:13 greet.pb.go
+-rw-r--r--  1 sarath  staff   359B Aug 25 00:08 greet.proto
+-rw-r--r--  1 sarath  staff   3.5K Aug 25 00:13 greet_grpc.pb.go
+```
+- new files generated successfully
+- now implement server and run test
+```go
+func (s server) DoGreet(ctx context.Context, in *greetpb.GreetRequest) (*greetpb.GreetResponse, error) {
+	firstName := in.GetGreeting().GetFirstName()
+	result := "Hello, " + firstName
+	res := &greetpb.GreetResponse{Result: result}
+	return res, nil
+}
+
+```
+```shell
+go run greet/greet_server/server.go
+2021/08/25 00:24:09 Hello world!
+
+```
+- now implement and run the client
+```shell
+go run greet/greet_client/client.go
+2021/08/25 00:36:32 Hello, I'm client.
+2021/08/25 00:36:32 created connection client: &{%!f(*grpc.ClientConn=&{0xc00014e980 0x1087540 localhost:50051 {passthrough  localhost:50051} localhost:50051 {<nil> <nil> [] [] <nil> <nil> {{1000000000 1.6 0.2 120000000000}} false false true 0 <nil>  {grpc-go/1.40.0 <nil> false [] <nil> <nil> {0 0 false} <nil> 0 0 32768 32768 0 <nil> true} [] <nil> 0 false true false <nil> <nil> <nil> <nil> []} 0xc000156480 {<nil> <nil> <nil> 0 grpc-go/1.40.0 {passthrough  localhost:50051}} 0xc0001ce420 {{{0 0} 0 0 0 0} 0xc000138250} {{0 0} 0 0 0 0} 0xc00013a840 0xc000144410 map[0xc000175080:{}] {0 0 false} pick_first 0xc000144460 {<nil>} 0xc000156460 0 0xc000142240 {0 0} <nil>})}
+2021/08/25 00:36:33 response form greet: Hello, Tony
+```
+- at the serve side we also see the log request:
+```shell
+2021/08/25 00:36:33 Greet function was invoked with greeting:{first_name:"Tony" last_name:"Stark"}
+```
