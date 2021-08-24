@@ -162,3 +162,12 @@ go run greet/greet_server/server.go
 2021/08/24 00:20:49 Hello world!
 
 ```
+# start the client
+- make sure the server is running
+- then we can run test the client, and it worked!
+```shell
+gor greet_client/client.go
+2021/08/24 23:25:09 Hello, I'm client.
+2021/08/24 23:25:09 created connection client: &{%!f(*grpc.ClientConn=&{0xc00014e940 0x11ba340 localhost:50051 {passthrough  localhost:50051} localhost:50051 {<nil> <nil> [] [] <nil> <nil> {{1000000000 1.6 0.2 120000000000}} false false true 0 <nil>  {grpc-go/1.40.0 <nil> false [] <nil> <nil> {0 0 false} <nil> 0 0 32768 32768 0 <nil> true} [] <nil> 0 false true false <nil> <nil> <nil> <nil> []} 0xc000156480 {<nil> <nil> <nil> 0 grpc-go/1.40.0 {passthrough  localhost:50051}} 0xc0001ce420 {{{0 0} 0 0 0 0} 0xc000136250} {{0 0} 0 0 0 0} 0xc000138840 0xc000144410 map[0xc000175080:{}] {0 0 false} pick_first 0xc000144460 {<nil>} 0xc000156460 0 0xc000142240 {0 0} <nil>})}
+
+```
