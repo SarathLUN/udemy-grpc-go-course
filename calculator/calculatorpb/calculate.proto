@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package calculate;
+
+option go_package = "github.com/SarathLUN/udemy-grpc-go-course/calculator/calculatorpb;calculate";
+
+message Input{
+    int32 num1=1;
+    int32 num2=2;
+}
+
+message SumRequest{
+    Input input = 1;
+}
+
+message SumResponse{
+    int32 result = 1;
+}
+
+service SumService{
+    rpc DoSum(SumRequest) returns (SumResponse);
+}
