@@ -216,3 +216,6 @@ go run greet/greet_client/client.go
 ```shell
 2021/08/25 00:36:33 Greet function was invoked with greeting:{first_name:"Tony" last_name:"Stark"}
 ```
+# Exercises:
+- my own code [here](/calculator).
+- follow solution [here](/calculator_solution).
