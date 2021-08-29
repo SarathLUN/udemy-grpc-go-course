@@ -20,7 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type GreetServiceClient interface {
 	DoGreet(ctx context.Context, in *GreetRequest, opts ...grpc.CallOption) (*GreetResponse, error)
 	// server streaming
-	DoGreetManyTimes(ctx context.Context, in *GreetManyTimesRequest, opts ...grpc.CallOption) (*GreetManyTimesResponse, error)
+	DoGreetManyTimes(ctx context.Context, in *GreetManyTimesRequest, opts ...grpc.CallOption) (GreetService_DoGreetManyTimesClient, error)
 }
 
 type greetServiceClient struct {
@@ -40,13 +40,36 @@ func (c *greetServiceClient) DoGreet(ctx context.Context, in *GreetRequest, opts
 	return out, nil
 }
 
-func (c *greetServiceClient) DoGreetManyTimes(ctx context.Context, in *GreetManyTimesRequest, opts ...grpc.CallOption) (*GreetManyTimesResponse, error) {
-	out := new(GreetManyTimesResponse)
-	err := c.cc.Invoke(ctx, "/greetManyTimes.GreetService/DoGreetManyTimes", in, out, opts...)
+func (c *greetServiceClient) DoGreetManyTimes(ctx context.Context, in *GreetManyTimesRequest, opts ...grpc.CallOption) (GreetService_DoGreetManyTimesClient, error) {
+	stream, err := c.cc.NewStream(ctx, &GreetService_ServiceDesc.Streams[0], "/greetManyTimes.GreetService/DoGreetManyTimes", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &greetServiceDoGreetManyTimesClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type GreetService_DoGreetManyTimesClient interface {
+	Recv() (*GreetManyTimesResponse, error)
+	grpc.ClientStream
+}
+
+type greetServiceDoGreetManyTimesClient struct {
+	grpc.ClientStream
+}
+
+func (x *greetServiceDoGreetManyTimesClient) Recv() (*GreetManyTimesResponse, error) {
+	m := new(GreetManyTimesResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // GreetServiceServer is the server API for GreetService service.
@@ -55,7 +78,7 @@ func (c *greetServiceClient) DoGreetManyTimes(ctx context.Context, in *GreetMany
 type GreetServiceServer interface {
 	DoGreet(context.Context, *GreetRequest) (*GreetResponse, error)
 	// server streaming
-	DoGreetManyTimes(context.Context, *GreetManyTimesRequest) (*GreetManyTimesResponse, error)
+	DoGreetManyTimes(*GreetManyTimesRequest, GreetService_DoGreetManyTimesServer) error
 	mustEmbedUnimplementedGreetServiceServer()
 }
 
@@ -66,8 +89,8 @@ type UnimplementedGreetServiceServer struct {
 func (UnimplementedGreetServiceServer) DoGreet(context.Context, *GreetRequest) (*GreetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DoGreet not implemented")
 }
-func (UnimplementedGreetServiceServer) DoGreetManyTimes(context.Context, *GreetManyTimesRequest) (*GreetManyTimesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DoGreetManyTimes not implemented")
+func (UnimplementedGreetServiceServer) DoGreetManyTimes(*GreetManyTimesRequest, GreetService_DoGreetManyTimesServer) error {
+	return status.Errorf(codes.Unimplemented, "method DoGreetManyTimes not implemented")
 }
 func (UnimplementedGreetServiceServer) mustEmbedUnimplementedGreetServiceServer() {}
 
@@ -100,22 +123,25 @@ func _GreetService_DoGreet_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GreetService_DoGreetManyTimes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GreetManyTimesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
+func _GreetService_DoGreetManyTimes_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GreetManyTimesRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(GreetServiceServer).DoGreetManyTimes(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/greetManyTimes.GreetService/DoGreetManyTimes",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreetServiceServer).DoGreetManyTimes(ctx, req.(*GreetManyTimesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(GreetServiceServer).DoGreetManyTimes(m, &greetServiceDoGreetManyTimesServer{stream})
+}
+
+type GreetService_DoGreetManyTimesServer interface {
+	Send(*GreetManyTimesResponse) error
+	grpc.ServerStream
+}
+
+type greetServiceDoGreetManyTimesServer struct {
+	grpc.ServerStream
+}
+
+func (x *greetServiceDoGreetManyTimesServer) Send(m *GreetManyTimesResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 // GreetService_ServiceDesc is the grpc.ServiceDesc for GreetService service.
@@ -129,11 +155,13 @@ var GreetService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "DoGreet",
 			Handler:    _GreetService_DoGreet_Handler,
 		},
+	},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "DoGreetManyTimes",
-			Handler:    _GreetService_DoGreetManyTimes_Handler,
+			StreamName:    "DoGreetManyTimes",
+			Handler:       _GreetService_DoGreetManyTimes_Handler,
+			ServerStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "greetManyTimesPB/greetManyTimes.proto",
+	Metadata: "greet-many-times/greetManyTimesPB/greetManyTimes.proto",
 }
