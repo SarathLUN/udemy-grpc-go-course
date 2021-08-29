@@ -18,7 +18,7 @@ service GreetService{
     rpc DoGreet(GreetRequest) returns (GreetResponse);
     
         // server streaming
-    rpc DoGreetManyTimes(GreetManyTimesRequest) returns (GreetManyTimesResponse);
+    rpc DoGreetManyTimes(GreetManyTimesRequest) returns (steam GreetManyTimesResponse);
 }
 
 ```
