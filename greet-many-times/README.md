@@ -26,5 +26,12 @@ service GreetService{
 - in this case, I called it `DoGreetManyTimes`
 - now generate protocol
 ```shell
-protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative greet-many-times/greetManyTimesPB/greetManyTimes.proto
+>protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative greet-many-times/greetManyTimesPB/greetManyTimes.proto
+```
+- now we implement server, then test running server
+```shell
+>go run greet-many-times/greetManyTimesServer/server.go 
+2021/08/29 13:04:43 Starting GreetManyTimes Server ...
+2021/08/29 13:04:43 listening on port: 50051
+
 ```
