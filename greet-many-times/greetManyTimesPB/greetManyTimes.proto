@@ -26,9 +26,9 @@ message GreetManyTimesResponse{
 }
 
 service GreetService{
-    rpc DoGreet(GreetRequest) returns (GreetResponse);
+    rpc DoGreet(GreetRequest) returns (GreetResponse){};
 
     // server streaming
-    rpc DoGreetManyTimes(GreetManyTimesRequest) returns (stream GreetManyTimesResponse);
+    rpc DoGreetManyTimes(GreetManyTimesRequest) returns (stream GreetManyTimesResponse){};
 }
 

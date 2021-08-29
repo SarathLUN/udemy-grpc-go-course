@@ -26,14 +26,13 @@ func (s server) DoGreetManyTimes(req *greetManyTimesPb.GreetManyTimesRequest, st
 	log.Printf("DoGreetManyTimes function was invoked with %v\n", req)
 	firstName := req.GetGreeting().GetFirstName()
 	for i := 0; i < 10; i++ {
-
 		result := "Hello, " + firstName + ", #" + strconv.Itoa(i)
 		res := &greetManyTimesPb.GreetManyTimesResponse{Result: result}
 		err := stream.Send(res)
 		if err != nil {
 			log.Fatalf("Error send response: %v", err)
 		}
-		time.Sleep(1000 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 	return nil
 }
