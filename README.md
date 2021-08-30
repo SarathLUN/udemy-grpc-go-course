@@ -225,3 +225,8 @@ go run greet/greet_client/client.go
 - class work [here](/greet-many-times)
 - exercise [here](/calculator-PrimeNumberDecomposition)
 
+# Client Streaming RPC
+
+- class work [here](/long-greet)
+- exercise [here](/calculator-compute-average)
+

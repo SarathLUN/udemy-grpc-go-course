@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package calculatorPb;
+
+option go_package = "github.com/SarathLUN/udemy-grpc-go-course/calculator-compute-average/calculatorPb;calculatorPb";
+
+message ComputeAverageRequest {
+    int32 number = 1;
+}
+
+message ComputeAverageResponse {
+    float result = 1;
+}
+
+service CalculatorService {
+    rpc ComputeAverage(stream ComputeAverageRequest) returns (ComputeAverageResponse) {};
+}
