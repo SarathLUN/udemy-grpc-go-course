@@ -219,3 +219,9 @@ go run greet/greet_client/client.go
 # Exercises:
 - my own code [here](/calculator).
 - follow solution [here](/calculator_solution).
+
+# Server Streaming RPC
+
+- class work [here](/greet-many-times)
+- exercise [here](/calculator-PrimeNumberDecomposition)
+
