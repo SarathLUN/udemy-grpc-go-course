@@ -27,5 +27,4 @@ go run calculator-PrimeNumberDecomposition/client/main.go
 2021/08/29 23:07:57 result server stream: 5
 2021/08/29 23:07:57 result server stream: 7
 
-
 ```
