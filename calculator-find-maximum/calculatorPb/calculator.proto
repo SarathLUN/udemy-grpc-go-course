@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package calculatorPb;
+
+option go_package = "github.com/SarathLUN/udemy-grpc-go-course/calculator-find-maximum/calculatorPb;calculatorPb";
+
+message FindMaximumRequest {
+    int32 number=1;
+}
+message FindMaximumResponse {
+    int32 maximum=1;
+}
+
+service CalculatorService {
+    rpc FindMaximum(stream FindMaximumRequest) returns (stream FindMaximumResponse) {};
+}
