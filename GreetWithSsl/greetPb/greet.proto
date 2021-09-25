@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package greet;
+
+option go_package = "github.com/SarathLUN/udemy-grpc-go-course/GreetWithSsl/greetPb;greetPb";
+
+message Greeting {
+    string first_name = 1;
+    string last_name = 2;
+}
+
+message GreetWithSslRequest {
+    Greeting greeting = 1;
+}
+
+message GreetWithSslResponse {
+    string result = 1;
+}
+
+service GreetService {
+    // Unary with Deadline
+    rpc GreetWithSsl(GreetWithSslRequest) returns (GreetWithSslResponse) {};
+}
