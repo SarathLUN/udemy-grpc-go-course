@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 	"log"
 	"net"
@@ -43,7 +44,7 @@ func main() {
 	}
 
 	// working on ssl
-	tls := true
+	tls := false
 	var opts []grpc.ServerOption
 	if tls {
 		certFile := "ssl/server.crt"
@@ -57,6 +58,10 @@ func main() {
 	}
 	s := grpc.NewServer(opts...)
 	greetPb.RegisterGreetServiceServer(s, &server{})
+
+	// Register reflection service on gRPC server.
+	reflection.Register(s)
+
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
