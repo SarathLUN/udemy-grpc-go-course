@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package blog;
+
+option go_package = "github.com/SarathLUN/udemy-grpc-go-course/blog/blog_pb;blogpb";
+
+message Blog{
+    string id=1;
+    string author=2;
+    string title=3;
+    string content=4;
+}
+
+service BlogService{}
