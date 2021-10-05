@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gopkg.in/mgo.v2/bson"
 	"log"
 	"net"
 	"os"
@@ -60,6 +61,37 @@ type blogItem struct {
 }
 
 var collection *mongo.Collection
+
+func (s server) ReadBlog(ctx context.Context, req *blogpb.ReadBlogRequest) (*blogpb.ReadBlogResponse, error) {
+	log.Println("ReadBlog request...")
+	blogID := req.GetBlogId()
+	// get object id
+	oid, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return nil, status.Errorf(
+			codes.InvalidArgument,
+			fmt.Sprintf("Server: cannot parse ID"),
+		)
+	}
+	// create empty struct
+	data := &blogItem{}
+	// prepare filter
+	filter := bson.M{"_id": oid}
+	// query data
+	res := collection.FindOne(ctx, filter)
+	if err := res.Decode(data); err != nil {
+		return nil, status.Errorf(
+			codes.NotFound,
+			fmt.Sprintf("Server: cannot find blog with specified ID: %v", err),
+		)
+	}
+	return &blogpb.ReadBlogResponse{Blog: &blogpb.Blog{
+		Id:      data.ID.Hex(),
+		Title:   data.Title,
+		Author:  data.AuthorID,
+		Content: data.Content,
+	}}, nil
+}
 
 func main() {
 	// if we crush the go code, we get the file name and line number

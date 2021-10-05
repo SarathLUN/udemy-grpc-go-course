@@ -4,21 +4,29 @@ package blog;
 
 option go_package = "github.com/SarathLUN/udemy-grpc-go-course/blog/blog_pb;blogpb";
 
-message Blog{
-    string id=1;
-    string author=2;
-    string title=3;
-    string content=4;
+message Blog {
+    string id = 1;
+    string author = 2;
+    string title = 3;
+    string content = 4;
 }
 
-message CreateBlogRequest{
+message CreateBlogRequest {
     Blog blog = 1;
 }
 
-message CreateBlogResponse{
+message CreateBlogResponse {
     Blog blog = 1; // will have a blog id
 }
 
-service BlogService{
-    rpc CreateBlog(CreateBlogRequest) returns (CreateBlogResponse){};
+message ReadBlogRequest {
+    string blog_id = 1;
+}
+message ReadBlogResponse {
+    Blog blog = 1;
+}
+
+service BlogService {
+    rpc CreateBlog(CreateBlogRequest) returns (CreateBlogResponse);
+    rpc ReadBlog(ReadBlogRequest) returns (ReadBlogResponse);
 }
