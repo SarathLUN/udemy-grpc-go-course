@@ -21,7 +21,24 @@ func main() {
 	// create blog
 	//doCreateBlog(c)
 	// read blog
-	doReadBlog(c)
+	//doReadBlog(c)
+	// update blog
+	doUpdateBlog(c)
+}
+
+func doUpdateBlog(c blogpb.BlogServiceClient) {
+	newBlog := &blogpb.Blog{
+		Id:      "615946967829cff00b77ff5f",
+		Author:  "Changed Author",
+		Title:   "My First Blog (edited)",
+		Content: "content of the first blog, with some awesome additions!",
+	}
+	ub, err := c.UpdateBlog(context.Background(), &blogpb.UpdateBlogRequest{Blog: newBlog})
+	if err != nil {
+		log.Fatalf("client: failed to update blog: %v", err)
+	}
+	log.Printf("client: updated blog: %v", ub)
+
 }
 
 func doReadBlog(c blogpb.BlogServiceClient) {
