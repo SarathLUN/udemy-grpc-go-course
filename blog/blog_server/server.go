@@ -137,7 +137,7 @@ func (s server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequest) (
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("server: cannot delete object in MongoDB: %v", err))
 	}
 	if res.DeletedCount == 0 {
-		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("server: cannot found object to delete: %v", err))
+		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("server: cannot find object to delete: %v", oid))
 	}
 	return &blogpb.DeleteBlogResponse{BlogId: req.GetBlogId()}, nil
 }

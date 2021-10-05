@@ -23,7 +23,18 @@ func main() {
 	// read blog
 	//doReadBlog(c)
 	// update blog
-	doUpdateBlog(c)
+	//doUpdateBlog(c)
+	// delete blog
+	doDeleteBlog(c)
+}
+
+func doDeleteBlog(c blogpb.BlogServiceClient) {
+	log.Println("client: deleting blog")
+	res, err := c.DeleteBlog(context.Background(), &blogpb.DeleteBlogRequest{BlogId: "615946967829cff00b77ff5f"})
+	if err != nil {
+		log.Fatalf("client: failed to delete blog: %v", err)
+	}
+	log.Printf("client: deleted blog: %v", res)
 }
 
 func doUpdateBlog(c blogpb.BlogServiceClient) {
