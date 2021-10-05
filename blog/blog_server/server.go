@@ -142,6 +142,30 @@ func (s server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequest) (
 	return &blogpb.DeleteBlogResponse{BlogId: req.GetBlogId()}, nil
 }
 
+func (s server) ListBlog(req *blogpb.ListBlogRequest, stream blogpb.BlogService_ListBlogServer) error {
+	log.Println("List blog request")
+	cur, err := collection.Find(context.Background(), nil)
+	if err != nil {
+		return status.Errorf(codes.Internal, fmt.Sprintf("server: Unknow internal error: %v", err))
+	}
+	defer cur.Close(context.Background())
+	for cur.Next(context.Background()) {
+		data := &blogItem{}
+		if err := cur.Decode(data); err != nil {
+			return status.Errorf(codes.Internal, fmt.Sprintf("server: failed to decode data from MongoDB: %v", err))
+		}
+		err := stream.Send(&blogpb.ListBlogResponse{Blog: dataToBlogPb(data)})
+		if err != nil {
+			return status.Errorf(codes.Internal, fmt.Sprintf("server: failed to send data to client: %v", err))
+		}
+	}
+	// when the cursor is all, it will return an error
+	if err := cur.Err(); err != nil {
+		return status.Errorf(codes.Internal, fmt.Sprintf("server: there is no more blog to stream: %v", err))
+	}
+	return nil
+}
+
 func main() {
 	// if we crush the go code, we get the file name and line number
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
