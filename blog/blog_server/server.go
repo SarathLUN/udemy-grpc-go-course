@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 	"gopkg.in/mgo.v2/bson"
 	"log"
@@ -199,6 +200,8 @@ func main() {
 	var opts []grpc.ServerOption
 	s := grpc.NewServer(opts...)
 	blogpb.RegisterBlogServiceServer(s, server{})
+	// register reflection
+	reflection.Register(s)
 
 	go func() {
 		if err := s.Serve(lis); err != nil {

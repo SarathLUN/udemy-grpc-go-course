@@ -121,3 +121,48 @@ output:
   }
 ]
 ```
+# Evans CLI
+- show package
+```shell
++-------------------------+
+|         PACKAGE         |
++-------------------------+
+| blog                    |
+| grpc.reflection.v1alpha |
++-------------------------+
+
+```
+- show service
+```shell
++-------------+------------+-------------------+--------------------+
+|   SERVICE   |    RPC     |   REQUEST TYPE    |   RESPONSE TYPE    |
++-------------+------------+-------------------+--------------------+
+| BlogService | CreateBlog | CreateBlogRequest | CreateBlogResponse |
+| BlogService | ReadBlog   | ReadBlogRequest   | ReadBlogResponse   |
+| BlogService | UpdateBlog | UpdateBlogRequest | UpdateBlogResponse |
+| BlogService | DeleteBlog | DeleteBlogRequest | DeleteBlogResponse |
+| BlogService | ListBlog   | ListBlogRequest   | ListBlogResponse   |
++-------------+------------+-------------------+--------------------+
+
+```
+- service BlogService
+- call ListBlog
+```shell
+{
+  "blog": {
+    "author": "Tony",
+    "content": "My Second blog content",
+    "id": "615946ac7829cff00b77ff60",
+    "title": "My Second Blog"
+  }
+}
+{
+  "blog": {
+    "author": "Tony",
+    "content": "My Second blog content",
+    "id": "61594d7bcd817d3d629f5138",
+    "title": "My Second Blog"
+  }
+}
+
+```
