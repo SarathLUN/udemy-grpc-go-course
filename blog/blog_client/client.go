@@ -18,6 +18,23 @@ func main() {
 		_ = cc.Close()
 	}(cc)
 	c := blogpb.NewBlogServiceClient(cc)
+	// create blog
+	//doCreateBlog(c)
+	// read blog
+	doReadBlog(c)
+}
+
+func doReadBlog(c blogpb.BlogServiceClient) {
+	log.Println("Client: doReadBlog")
+	res, err := c.ReadBlog(context.Background(), &blogpb.ReadBlogRequest{BlogId: "21594d7bcd817d3d629f5138"})
+	if err != nil {
+		log.Fatalf("client: failed to read blog: %v", err)
+	}
+	log.Printf("client: read blog: %v", res)
+}
+
+func doCreateBlog(c blogpb.BlogServiceClient) {
+	log.Println("Client: doCreateBlog")
 	blog := &blogpb.Blog{
 		Author:  "Tony",
 		Title:   "My Second Blog",
