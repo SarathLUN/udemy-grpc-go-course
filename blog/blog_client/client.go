@@ -38,7 +38,6 @@ func doUpdateBlog(c blogpb.BlogServiceClient) {
 		log.Fatalf("client: failed to update blog: %v", err)
 	}
 	log.Printf("client: updated blog: %v", ub)
-
 }
 
 func doReadBlog(c blogpb.BlogServiceClient) {
