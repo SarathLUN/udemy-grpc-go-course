@@ -4,10 +4,14 @@ import (
 	"context"
 	blogpb "github.com/SarathLUN/udemy-grpc-go-course/blog/blog_pb"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 )
 
 func main() {
+	// if we crush the go code, we get the file name and line number
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
 	log.Println("Running blog client")
 	opts := grpc.WithInsecure()
 	cc, err := grpc.Dial("localhost:50051", opts)
@@ -25,7 +29,26 @@ func main() {
 	// update blog
 	//doUpdateBlog(c)
 	// delete blog
-	doDeleteBlog(c)
+	//doDeleteBlog(c)
+	// stream list blog
+	doStreamListBlog(c)
+}
+
+func doStreamListBlog(c blogpb.BlogServiceClient) {
+	stream, err := c.ListBlog(context.Background(), &blogpb.ListBlogRequest{})
+	if err != nil {
+		log.Fatalf("client: error while calling ListBlog RPC: %v", err)
+	}
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("client: wooh! something went wrong: %v", err)
+		}
+		log.Println(res.GetBlog())
+	}
 }
 
 func doDeleteBlog(c blogpb.BlogServiceClient) {

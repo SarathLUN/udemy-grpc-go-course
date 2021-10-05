@@ -142,13 +142,19 @@ func (s server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequest) (
 	return &blogpb.DeleteBlogResponse{BlogId: req.GetBlogId()}, nil
 }
 
-func (s server) ListBlog(req *blogpb.ListBlogRequest, stream blogpb.BlogService_ListBlogServer) error {
+func (s server) ListBlog(_ *blogpb.ListBlogRequest, stream blogpb.BlogService_ListBlogServer) error {
 	log.Println("List blog request")
-	cur, err := collection.Find(context.Background(), nil)
+	cur, err := collection.Find(context.Background(), primitive.D{{}})
 	if err != nil {
-		return status.Errorf(codes.Internal, fmt.Sprintf("server: Unknow internal error: %v", err))
+		log.Printf("failed to find blog: %v", err)
+		return status.Errorf(codes.Internal, fmt.Sprintf("server: error find blog: %v", err))
 	}
-	defer cur.Close(context.Background())
+	defer func(cur *mongo.Cursor, ctx context.Context) {
+		err := cur.Close(ctx)
+		if err != nil {
+			log.Fatalf("failed to close the cursor: %v", err)
+		}
+	}(cur, context.Background())
 	for cur.Next(context.Background()) {
 		data := &blogItem{}
 		if err := cur.Decode(data); err != nil {
